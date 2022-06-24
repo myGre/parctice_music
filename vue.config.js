@@ -10,5 +10,7 @@ module.exports = defineConfig({
         `
       }
     }
-  }
+  },
+  // 关闭es6语法校验
+  lintOnSave: false
 })
