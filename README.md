@@ -1,4 +1,4 @@
-# parctice_music
+# demo
 
 ## Project setup
 ```
