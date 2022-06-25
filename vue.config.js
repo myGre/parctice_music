@@ -12,5 +12,10 @@ module.exports = defineConfig({
     }
   },
   // 关闭es6语法校验
-  lintOnSave: false
+  lintOnSave: false,
+  devServer: {
+    // 解决跨域问题
+    proxy: 'http://localhost:3000'
+  }
+  
 })
