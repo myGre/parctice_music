@@ -6,3 +6,10 @@ export function getBanners() {
     type: 2
   })
 }
+
+// 推荐歌单列表
+export function getPlaylist() {
+  return get('/top/playlist', {
+    limit: 50
+  })
+}

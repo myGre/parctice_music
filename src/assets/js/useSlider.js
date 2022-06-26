@@ -1,6 +1,6 @@
 import BScroll from '@better-scroll/core'
 import Slide from '@better-scroll/slide'
-import { onMounted, ref } from "vue"
+import { onMounted, ref, onUnmounted, onActivated, onDeactivated } from "vue"
 
 BScroll.use(Slide)
 
@@ -21,7 +21,20 @@ export function useSlider() {
     slider.value.on("slidePageChanged", (page) => {
       currentPageIndex.value = page.pageX
     })
-  })
+  });
+  // 销毁时
+  onUnmounted(() => {
+    slider.value.destroy() // 销毁轮播功能
+  });
+  // 激活时
+  onActivated(() => {
+    slider.value.enable // 恢复功能
+    slider.value.refresh // 刷新
+  });
+  // 失活时
+  onDeactivated(() => {
+    slider.value.enable
+  });
   return {
     rootRef,
     currentPageIndex

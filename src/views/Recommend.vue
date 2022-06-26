@@ -1,26 +1,106 @@
 <template>
   <div class="recommend">
-    <!-- 轮播 -->
-    <my-slider v-if="sliders.length" :sliders=sliders></my-slider>
+    <my-scroll class="recommend-content">
+      <div>
+        <!-- 轮播 -->
+        <div class="silder-wrapper">
+          <div class="slider-content">
+            <my-slider v-if="sliders.length" :sliders="sliders"></my-slider>
+          </div>
+        </div>
+        <div class="recommend-list">
+          <h2 class="list-title">热门推荐歌单</h2>
+          <ul>
+            <li class="recommend-item" v-for="item in playlist" :key="item.id">
+              <div class="icon">
+                <img
+                  :src="item.coverImgUrl"
+                  alt=""
+                  style="width: 60px; height: 60px"
+                />
+              </div>
+              <p class="text">
+                <span class="name">{{ item.name }}</span>
+                <span class="description">{{ item.description }}</span>
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </my-scroll>
   </div>
 </template>
 
 <script setup>
-import { getBanners } from "@/service/recommend"
-import MySlider from "@/components/Slider.vue"
+import { getBanners, getPlaylist } from "@/service/recommend";
+// 回滚动画插件
+import MyScroll from "@/components/Scroll.vue";
+// 轮播图插件
+import MySlider from "@/components/Slider.vue";
 import { onMounted, ref } from "vue";
-
-let sliders = ref([])
-onMounted( async() => {
-  // 获取轮播图
-  const result = await getBanners()
+// 轮播数据
+let sliders = ref([]);
+// 推荐歌单
+const playlist = ref([]);
+onMounted(async () => {
+  // 获取轮播图数据
+  const result = await getBanners();
   if (result.code == 200) {
-   sliders.value = result.banners
+    sliders.value = result.banners;
   }
+  // 推荐歌单
+  const result1 = await getPlaylist();
+  playlist.value = result1.playlists;
 });
 </script>
 
 <style lang="scss" scoped>
-.recommend{
+.recommend {
+  position: fixed;
+  width: 100%;
+  top: 88px;
+  bottom: 0;
+  overflow: scroll;
+  .recommend-content {
+    height: 100%;
+    overflow: hidden;
+    .recommend-list {
+      .list-title {
+        height: 65px;
+        line-height: 65px;
+        text-align: center;
+        font-size: $font-size-medium;
+        color: $color-theme;
+      }
+    }
+    .recommend-item {
+      display: flex;
+      box-sizing: border-box;
+      align-items: center;
+      padding: 0 20px 20px 20px;
+      .icon {
+        flex: 0 0 60px;
+        width: 60px;
+        padding-right: 20px;
+      }
+      .text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        line-height: 20px;
+        overflow: hidden;
+        font-size: $font-size-medium;
+        .name {
+          margin-bottom: 10px;
+          color: $color-text-ll;
+        }
+        .description {
+          @include no-wrap();
+          color: $color-text-d;
+        }
+      }
+    }
+  }
 }
 </style>
