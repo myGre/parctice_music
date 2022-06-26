@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" v-loading="loading">
     <my-scroll class="recommend-content">
       <div>
         <!-- 轮播 -->
@@ -34,14 +34,16 @@
 <script setup>
 import { getBanners, getPlaylist } from "@/service/recommend";
 // 回滚动画插件
-import MyScroll from "@/components/Scroll.vue";
+import MyScroll from "@/components/base/Scroll.vue";
 // 轮播图插件
-import MySlider from "@/components/Slider.vue";
-import { onMounted, ref } from "vue";
+import MySlider from "@/components/base/Slider.vue";
+import { computed, onMounted, ref } from "vue";
 // 轮播数据
 let sliders = ref([]);
 // 推荐歌单
 const playlist = ref([]);
+// 自定义过渡动画,为TRUE时开启loading
+const loading = computed(() => !sliders.value.length > 0 || !playlist.value.length > 0)
 onMounted(async () => {
   // 获取轮播图数据
   const result = await getBanners();
