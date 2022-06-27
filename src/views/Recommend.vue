@@ -14,7 +14,7 @@
             <li class="recommend-item" v-for="item in playlist" :key="item.id">
               <div class="icon">
                 <img
-                  :src="item.coverImgUrl"
+                  v-img-lazy="item.coverImgUrl"
                   alt=""
                   style="width: 60px; height: 60px"
                 />

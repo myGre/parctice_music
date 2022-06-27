@@ -1,10 +1,12 @@
 // 加载动画指令
 import loading from "@/components/base/Loading.vue"
 import { createApp } from "vue"
-
+import { useIntersectionObserver } from "@vueuse/core"
+import defaultImg from "@/assets/images/lazy.png"
 export default {
-  install(app){
-     app.directive("loading", {
+  install(app) {
+    // 自定义加载指令
+    app.directive("loading", {
       mounted(el, binding) {
         // console.log(el, binding);
         // loading组件应用对象
@@ -21,7 +23,25 @@ export default {
           remove(el)
         }
       }
-     })
+    })
+    // 图片懒加载指令
+    app.directive("img-lazy", {
+      mounted(el, binding) {
+        // 设为默认图片
+        el.src = defaultImg
+        const { stop } = useIntersectionObserver(el, ([{ isIntersecting }]) => {
+          // isIntersecting为TRUE时进入视图区
+          if (isIntersecting) {
+            el.onerror = function() {
+              el.src = defaultImg
+            }
+            el.src = binding.value
+            // 停止监听
+            stop()
+          }
+        })
+      }
+    })
   }
 }
 
