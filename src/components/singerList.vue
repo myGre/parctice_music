@@ -1,6 +1,6 @@
 <template>
-  <div class="singer-list">
-    <ul class="view-scroll">
+  <my-scroll class="singer-list" :probeType="3" @scroll="onScroll">
+    <ul class="view-scroll" ref="groupRef">
       <li class="group" v-for="groub in singers" :key="groub.tag">
         <h2 class="title">{{ groub.tag }}</h2>
         <ul>
@@ -13,11 +13,24 @@
         </ul>
       </li>
     </ul>
-  </div>
+    <div class="fixed" v-if="fixedTag">
+      <h2 class="fixed-title">{{ fixedTag }}</h2>
+    </div>
+  </my-scroll>
 </template>
 
 <script setup>
-const props = defineProps(["singers"]);
+import useFixed from '@/assets/js/useFixed'
+import MyScroll from "@/components/base/Scroll.vue";
+import { computed, ref } from "vue";
+const scrollY = ref(0)
+const props = defineProps({
+  singers: {
+    type: Array,
+    require: true,
+  },
+});
+const { onScroll, groupRef, fixedTag } = useFixed(props)
 </script>
 
 <style lang="scss" scoped>
@@ -60,6 +73,20 @@ const props = defineProps(["singers"]);
         color: $color-text-l;
         font-size: $font-size-medium;
       }
+    }
+  }
+  .fixed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    .fixed-title {
+      height: 30px;
+      line-height: 30px;
+      padding-left: 20px;
+      font-size: $font-size-small;
+      color: $color-text-l;
+      background: $color-highlight-background;
     }
   }
 }

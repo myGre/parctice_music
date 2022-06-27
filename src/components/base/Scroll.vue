@@ -12,8 +12,9 @@ const props = defineProps({
     default: 1
   }
 })
+const emit = defineEmits(["scroll"])
 
-const { rootRef } = useScroll(props)
+const { rootRef } = useScroll(props, emit)
 </script>
 
 <style lang="scss" scoped>

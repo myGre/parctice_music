@@ -1,6 +1,6 @@
 <template>
   <div class="singer">
-    <my-singerList :singers="singers"></my-singerList>
+    <my-singerList :singers="singers" ></my-singerList>
   </div>
 </template>
 
@@ -17,6 +17,9 @@ const arrSingerCharCode = computed(()=> {
   }
   return arr
 })
+// const loading = computed(()=> {
+//   return !singers.value.length > 0
+// })
 onMounted(async()=>{
   const result = await getSingerList(arrSingerCharCode.value)
   singers.value = result
@@ -24,5 +27,10 @@ onMounted(async()=>{
 </script>
 
 <style lang="scss" scoped>
-
+.singer{
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  top: 88px;
+}
 </style>

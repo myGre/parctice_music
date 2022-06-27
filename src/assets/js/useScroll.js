@@ -4,16 +4,19 @@ import { onMounted, ref, onUnmounted, onActivated, onDeactivated } from 'vue'
 
 BScroll.use(ObserveDOM)
 
-export function useScroll(props) {
+export function useScroll(props, emit) {
   const scroll = ref(null)
   const rootRef = ref(null)
   onMounted(() => {
     scroll.value = new BScroll(rootRef.value, {
       observeDOM: true, // 开启 observe-dom 插件
       ...props
-      // scrollX: false,
-      // scrollY: true
     })
+    if (props.probeType) {
+      scroll.value.on("scroll", pos => {
+        emit("scroll", pos)
+      })
+    }
   })
   // 销毁时
   onUnmounted(() => {
