@@ -33,5 +33,6 @@ export function useScroll(props, emit) {
   })
   return {
     rootRef,
+    scroll
   }
 }

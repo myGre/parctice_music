@@ -1,5 +1,10 @@
 <template>
-  <my-scroll class="singer-list" :probeType="3" @scroll="onScroll">
+  <my-scroll
+    class="singer-list"
+    :probeType="3"
+    @scroll="onScroll"
+    ref="scrollRef"
+  >
     <ul class="view-scroll" ref="groupRef">
       <li class="group" v-for="groub in singers" :key="groub.tag">
         <h2 class="title">{{ groub.tag }}</h2>
@@ -20,14 +25,24 @@
     <!-- 侧边栏 -->
     <div class="shortcut">
       <ul>
-        <li class="item" v-for="(item,index) in arrStr" :key="index" :class="{current: currentIndex === index}">{{ item }}</li>
+        <li
+          class="item"
+          v-for="(item, index) in arrStr"
+          :key="index"
+          :class="{ current: currentIndex === index }"
+          :data-index = "index"
+          @touchstart="onShortcutTargeEl"
+        >
+          {{ item }}
+        </li>
       </ul>
     </div>
   </my-scroll>
 </template>
 
 <script setup>
-import useFixed from '@/assets/js/useFixed'
+import useFixed from "@/assets/js/useFixed";
+import useShortcut from "@/assets/js/useShortcut";
 import MyScroll from "@/components/base/Scroll.vue";
 import { computed, ref } from "vue";
 const props = defineProps({
@@ -37,10 +52,12 @@ const props = defineProps({
   },
   arrStr: {
     type: Array,
-    require: true
-  }
+    require: true,
+  },
 });
-const { onScroll, groupRef, fixedTag, fixedStyle, currentIndex } = useFixed(props)
+const { onScroll, groupRef, fixedTag, fixedStyle, currentIndex } =
+  useFixed(props);
+const { scrollRef, onShortcutTargeEl } = useShortcut(groupRef);
 </script>
 
 <style lang="scss" scoped>
@@ -113,15 +130,15 @@ const { onScroll, groupRef, fixedTag, fixedStyle, currentIndex } = useFixed(prop
     background: $color-background-d;
     font-family: Helvetica;
     .item {
-        padding: 3px;
-        line-height: 1;
-        color: $color-text-l;
-        font-size: $font-size-small;
-        &.current {
-            // 高亮当前区间的字母高亮
-            color: $color-theme;
-        }
+      padding: 3px;
+      line-height: 1;
+      color: $color-text-l;
+      font-size: $font-size-small;
+      &.current {
+        // 高亮当前区间的字母高亮
+        color: $color-theme;
+      }
     }
-}
+  }
 }
 </style>

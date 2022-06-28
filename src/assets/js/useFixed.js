@@ -16,7 +16,6 @@ export default function useFixed(props){
     if (instance.value > 0 && instance.value < 30) {
       // diff为两两li顶部之间的距离差，为负数代表以重叠
       diff = instance.value -30
-      console.log(diff);
     }
     return {
       transform: `translate(0, ${diff}px)`
