@@ -1,6 +1,6 @@
 <template>
   <div class="singer">
-    <my-singerList :singers="singers" ></my-singerList>
+    <my-singerList :singers="singers" :arrStr="arrSingerCharCode"></my-singerList>
   </div>
 </template>
 

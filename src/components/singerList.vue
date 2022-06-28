@@ -13,8 +13,15 @@
         </ul>
       </li>
     </ul>
-    <div class="fixed" v-if="fixedTag">
+    <!-- 吸顶栏 -->
+    <div class="fixed" v-if="fixedTag" :style="fixedStyle">
       <h2 class="fixed-title">{{ fixedTag }}</h2>
+    </div>
+    <!-- 侧边栏 -->
+    <div class="shortcut">
+      <ul>
+        <li class="item" v-for="(item,index) in arrStr" :key="index" :class="{current: currentIndex === index}">{{ item }}</li>
+      </ul>
     </div>
   </my-scroll>
 </template>
@@ -23,14 +30,17 @@
 import useFixed from '@/assets/js/useFixed'
 import MyScroll from "@/components/base/Scroll.vue";
 import { computed, ref } from "vue";
-const scrollY = ref(0)
 const props = defineProps({
   singers: {
     type: Array,
     require: true,
   },
+  arrStr: {
+    type: Array,
+    require: true
+  }
 });
-const { onScroll, groupRef, fixedTag } = useFixed(props)
+const { onScroll, groupRef, fixedTag, fixedStyle, currentIndex } = useFixed(props)
 </script>
 
 <style lang="scss" scoped>
@@ -75,6 +85,7 @@ const { onScroll, groupRef, fixedTag } = useFixed(props)
       }
     }
   }
+  // 吸顶
   .fixed {
     position: absolute;
     top: 0;
@@ -89,5 +100,28 @@ const { onScroll, groupRef, fixedTag } = useFixed(props)
       background: $color-highlight-background;
     }
   }
+  // 侧边栏
+  .shortcut {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    padding: 20px 0;
+    border-radius: 10px;
+    text-align: center;
+    background: $color-background-d;
+    font-family: Helvetica;
+    .item {
+        padding: 3px;
+        line-height: 1;
+        color: $color-text-l;
+        font-size: $font-size-small;
+        &.current {
+            // 高亮当前区间的字母高亮
+            color: $color-theme;
+        }
+    }
+}
 }
 </style>
