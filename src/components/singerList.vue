@@ -9,7 +9,7 @@
       <li class="group" v-for="groub in singers" :key="groub.tag">
         <h2 class="title">{{ groub.tag }}</h2>
         <ul>
-          <li class="item" v-for="item in groub.artists" :key="item.id">
+          <li class="item" v-for="item in groub.artists" :key="item.id" @click="singer(item)">
             <div class="avatar">
               <img v-img-lazy="item.picUrl" alt="" />
             </div>
@@ -31,7 +31,8 @@
           :key="index"
           :class="{ current: currentIndex === index }"
           :data-index = "index"
-          @touchstart="onShortcutTargeEl"
+          @touchstart.prevent.stop="onShortcutTargeEl"
+          @touchmove.prevent.stop="onShortcutTargeElMove"
         >
           {{ item }}
         </li>
@@ -45,6 +46,7 @@ import useFixed from "@/assets/js/useFixed";
 import useShortcut from "@/assets/js/useShortcut";
 import MyScroll from "@/components/base/Scroll.vue";
 import { computed, ref } from "vue";
+const emit = defineEmits(["select"])
 const props = defineProps({
   singers: {
     type: Array,
@@ -55,9 +57,12 @@ const props = defineProps({
     require: true,
   },
 });
+function singer(item){
+  emit("select", item)
+}
 const { onScroll, groupRef, fixedTag, fixedStyle, currentIndex } =
   useFixed(props);
-const { scrollRef, onShortcutTargeEl } = useShortcut(groupRef);
+const { scrollRef, onShortcutTargeEl, onShortcutTargeElMove } = useShortcut(groupRef);
 </script>
 
 <style lang="scss" scoped>

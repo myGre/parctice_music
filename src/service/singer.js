@@ -22,6 +22,11 @@ export function getSingerList(arrSingerCharCode) {
   })
 
 }
+// 歌单列表
+export function getArtists(song){
+  return get(`/artists?id=${song.id}`)
+}
+// 处理歌手列表数据函数
 function change(item, singerList, resolve) {
   if (item === "热") {
     // 热门歌手

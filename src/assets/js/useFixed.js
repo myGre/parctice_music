@@ -37,7 +37,6 @@ export default function useFixed(props){
       height += list[i].clientHeight
       listHeightVal.push(height)
     }
-    // console.log(listHeightVal);
   }
   const fixedTag = computed(()=> {
     if (scrollY.value < 0) {

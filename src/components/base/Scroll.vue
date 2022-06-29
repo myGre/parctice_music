@@ -10,6 +10,10 @@ const props = defineProps({
   probeType: {
     type: Number,
     default: 1
+  },
+  click: {
+    type: Boolean,
+    default: true
   }
 })
 const emit = defineEmits(["scroll"])
