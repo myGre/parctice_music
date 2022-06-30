@@ -5,7 +5,11 @@
       :arrStr="arrSingerCharCode"
       @select="getSinger"
     ></my-singerList>
-    <router-view></router-view>
+    <router-view v-slot="{ Component }" >
+      <transition name="slide" appear>
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </div>
 </template>
 
@@ -13,10 +17,10 @@
 import MySingerList from "@/components/singerList.vue";
 import { getSingerList } from "@/service/singer";
 import { computed, onMounted, ref } from "vue";
-import { getLocal, setLocal } from "@/assets/js/storage-api";
+import { getSesion, setSesion } from "@/assets/js/storage-api";
 import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 // 全部歌手列表
 const singers = ref([]);
 const arrSingerCharCode = computed(() => {
@@ -29,23 +33,23 @@ const arrSingerCharCode = computed(() => {
 function getSinger(item) {
   // 歌手详情信息
   const detaillObj = {
-    imgUrl:item.img1v1Url,
+    imgUrl: item.img1v1Url,
     id: item.id,
-    name: item.name
-  }
-  setLocal("__detaillObj__", detaillObj)
+    name: item.name,
+  };
+  setSesion("__detaillObj__", detaillObj);
   router.push({
-    path: `/singer/${item.id}`
-  })
+    path: `/singer/${item.id}`,
+  });
 }
 onMounted(async () => {
-  const singer = getLocal("__singerList__");
+  const singer = getSesion("__singerList__");
   if (singer) {
     singers.value = singer;
   } else {
     const result = await getSingerList(arrSingerCharCode.value);
     singers.value = result;
-    setLocal("__singerList__", result)
+    setSesion("__singerList__", result);
   }
 });
 </script>
