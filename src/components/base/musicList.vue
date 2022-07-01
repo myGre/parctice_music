@@ -11,19 +11,14 @@
       <div class="play-btn-wrapper">
         <div class="play-btn" :style="playBtnStyle" v-if="songList.length">
           <i class="icon-play"></i>
-          <span class="text">顺序播放全部</span>
+          <span @click="allPlay" class="text">顺序播放全部</span>
         </div>
       </div>
       <!-- 遮罩层 -->
       <div class="filter" :style="filterStyle"></div>
     </div>
     <!-- 歌曲列表 -->
-    <my-scroll
-      class="list"
-      :probeType="3"
-      :style="songListStyle"
-      @scroll="onscroll"
-    >
+    <my-scroll class="list" :probeType="3" :style="songListStyle" @scroll="onscroll">
       <div class="song-list-wrapper" v-loading="loading">
         <my-songlist :songList="songList"></my-songlist>
       </div>
@@ -35,8 +30,11 @@
 import MyScroll from "@/components/base/Scroll.vue";
 import MySonglist from "@/components/base/songList.vue";
 import { useRouter } from "vue-router"
-const { onMounted, ref, computed } = require("@vue/runtime-core");
+import { useStore } from "vuex";
+import { onMounted, ref, computed } from "vue"
+
 const router = useRouter()
+const store = useStore()
 const props = defineProps({
   imgUrl: String,
   title: String,
@@ -56,7 +54,7 @@ const imgRef = ref(0);
 const styleHeight = ref();
 // 歌曲列表的最大top
 const maxSongListTop = ref({});
-
+// 背景样式值
 function bgImageStyle() {
   // 歌曲列表height
   let height = "40%";
@@ -89,13 +87,12 @@ const playBtnStyle = computed(() => {
     display,
   };
 });
-// 歌曲列表top值
+// 歌曲列表样式top值
 const songListStyle = computed(() => {
   return {
     top: `${styleHeight.value}px`,
   };
 });
-
 // 遮罩层背景层滤镜
 const filterStyle = computed(() => {
   let blur = 0;
@@ -106,6 +103,10 @@ const filterStyle = computed(() => {
     backdropFilter: `blur(${blur}px)`,
   };
 });
+// 歌曲播放
+function allPlay() {
+  store.dispatch("AddPlayList", props.songList)
+}
 function onscroll(pos) {
   scrollY.value = -pos.y;
 }
@@ -125,12 +126,14 @@ onMounted(() => {
   width: 100%;
   top: 0;
   bottom: 0;
+
   .back {
     position: absolute;
     top: 0;
     left: 6px;
     z-index: 20;
     transform: translateZ(2px);
+
     .icon-back {
       display: block;
       padding: 10px;
@@ -138,6 +141,7 @@ onMounted(() => {
       color: $color-theme;
     }
   }
+
   .title {
     position: absolute;
     top: 0;
@@ -151,6 +155,7 @@ onMounted(() => {
     font-size: $font-size-large;
     color: $color-text;
   }
+
   .bg-image {
     position: relative;
     width: 100%;
@@ -158,11 +163,13 @@ onMounted(() => {
     transform-origin: top;
     background-size: cover;
     z-index: 0;
+
     .play-btn-wrapper {
       position: absolute;
       bottom: 20px;
       z-index: 10;
       width: 100%;
+
       .play-btn {
         box-sizing: border-box;
         width: 135px;
@@ -174,18 +181,21 @@ onMounted(() => {
         border-radius: 100px;
         font-size: 0;
       }
+
       .icon-play {
         display: inline-block;
         vertical-align: middle;
         margin-right: 6px;
         font-size: $font-size-medium-x;
       }
+
       .text {
         display: inline-block;
         vertical-align: middle;
         font-size: $font-size-small;
       }
     }
+
     .filter {
       position: absolute;
       top: 0;
@@ -195,11 +205,13 @@ onMounted(() => {
       background: rgba(7, 17, 27, 0.4);
     }
   }
+
   .list {
     position: absolute;
     bottom: 0;
     width: 100%;
     z-index: 0;
+
     .song-list-wrapper {
       padding: 20px 30px;
       min-height: 350px;

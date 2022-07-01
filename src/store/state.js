@@ -10,7 +10,7 @@ const state = {
   // 全屏播放器/mini播放器
   fullScreen: false,
   // 当前播放歌曲的索引
-  currentIndex: null,
+  currentIndex: 0,
   // 最爱的歌曲列表
   favoriteList: [],
   // 历史播放记录

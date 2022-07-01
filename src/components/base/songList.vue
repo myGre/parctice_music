@@ -1,6 +1,6 @@
 <template>
   <ul class="song-list">
-    <li class="item" v-for="item in songList" :key="item.id">
+    <li class="item" v-for="item in songList" :key="item.id" @click="getSong(item)">
       <div class="content">
         <h3 class="name">{{ item.name }}</h3>
         <p class="desc">{{ handle(item) }}</p>
@@ -10,8 +10,10 @@
 </template>
 
 <script setup>
+import { useStore } from "vuex";
 import { computed, onMounted, ref } from "vue";
 
+const store = useStore()
 const props = defineProps(["songList"]);
 const handle = (item)=>{
   return item.ar
@@ -20,7 +22,9 @@ const handle = (item)=>{
     })
     .join("/");
 };
-
+function getSong(item) {
+  store.dispatch("addOnePlay", item)
+}
 </script>
 
 <style lang="scss" scoped>
