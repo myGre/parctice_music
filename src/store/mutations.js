@@ -11,7 +11,7 @@ const mutations = {
   setPlaying(state, play){
     state.playing = play
   },
-  // 播放模式：1.顺序播放 2.单曲循环 3.随机播放
+  // 播放模式：0.顺序播放 1.单曲循环 2.随机播放
   setPlaymode(state, mode){
     state.playmode = mode
   },

@@ -36,19 +36,19 @@
         </div>
         <div class="operators">
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i :class="modeStyle" @click="modeCode"></i>
           </div>
-          <div class="icon i-left">
+          <div class="icon i-left" @click="prev">
             <i class="icon-prev"></i>
           </div>
           <div class="icon i-center" @click="playState">
             <i :class="playStyly"></i>
           </div>
-          <div class="icon i-right">
+          <div class="icon i-right" @click="next">
             <i class="icon-next"></i>
           </div>
-          <div class="icon i-right">
-            <i class="icon-not-favorite"></i>
+          <div class="icon i-right" @click="addOrremoveFavorite">
+            <i :class="favoriteIcon"></i>
           </div>
         </div>
       </div>
@@ -62,26 +62,26 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { getSong } from "@/service/player"
+import useMode from '@/assets/js/useMode'
+import useFavorite from '@/assets/js/useFavorite'
 
+const audioRef = ref(null)
+// vuex
 const store = useStore()
-// 正在播放列表
 const sequenceList = computed(() => store.state.sequenceList)
-// 源播放列表
 const playList = computed(() => store.state.playList)
-// 播放状态
 const playing = computed(() => store.state.playing)
-// 全局控件
 const fullScreen = computed(() => store.state.fullScreen)
-// 正在播放的歌曲对象
 const currentSong = computed(() => store.getters.currentSong)
-const currentIndex = computed(() => store.getters.currentIndex)
+const currentIndex = computed(() => store.state.currentIndex)
+
+// hoos
+const { modeStyle, modeCode } = useMode()
+const { favoriteIcon, addOrremoveFavorite } = useFavorite()
 const playStyly = computed(() => {
   return playing.value ? "icon-pause" : "icon-play"
 })
-const audioRef = ref(null)
-function geBack() {
-  store.commit("setFullScreen", false)
-}
+
 const handle = (item) => {
   return item.ar
     .map((songObj) => {
@@ -89,8 +89,47 @@ const handle = (item) => {
     })
     .join("/");
 };
+// 上一首
+function prev() {
+  // 如果没有歌曲
+  if (!sequenceList.value.length) return
+  // 只有一首歌
+  if (sequenceList.value.length == 1) return loop()
+
+  let index = currentIndex.value - 1
+  if (index === -1) {
+    index = sequenceList.value.length - 1
+  }
+  store.commit("setCurrentIndex", index)
+}
+// 下一首
+function next() {
+  // 如果没有歌曲
+  if (!sequenceList.value.length) return
+  // 只有一首歌
+  if (sequenceList.value.length == 1) return loop()
+
+  let index = currentIndex.value + 1
+  if (index === sequenceList.value.length) {
+    index = 0
+  }
+  store.commit("setCurrentIndex", index)
+}
+// 单曲循环
+function loop() {
+  let audio = audioRef.value
+  // currentTime当前播放时间
+  audio.currentTime = 0
+  // 重新播放
+  audio.play()
+  store.commit("setPlaying", true)
+}
+// 返回
+function geBack() {
+  store.commit("setFullScreen", false)
+}
 // CD样式
-const cdStyle = computed(()=>{
+const cdStyle = computed(() => {
   return {
     animationPlayState: playing.value ? "running" : "paused"
   }
@@ -125,7 +164,7 @@ watch(currentSong, async (newSong) => {
   audio.play()
 })
 onMounted(() => {
-  // console.log(store);
+  // console.log(favoriteIcon.value);
 })
 </script>
 

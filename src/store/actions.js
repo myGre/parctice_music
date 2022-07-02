@@ -57,26 +57,17 @@ const actions = {
   // --------修改播放模式--------
   updateMode({ commit, state, getters }, mode) {
     // 当前播放对象
-    let sequenceList = state.sequenceList.slice()  // 当前的播放列表
-    let playList = state.playList.slice() // 源播放列表
-    let currentIndex = state.currentIndex // 当前播放歌曲的索引
-    // 顺序播放
-    if (mode == 1) {
+    let currentSong = getters.currentSong
+    // 随机播放
+    if (mode == 2) {
+      commit("setSequenceList", shuffle(state.playList))
+    } else{
       commit("setSequenceList", state.playList)
     }
-    // 单曲循环
-    if (mode == 2) {
-
-    }
-    // 随机播放
-    if (mode == 3) {
-      commit("setSequenceList", shuffle(state.playList))
-    }
-    // 当前播放对象索引
-    let index = findIndex(sequenceList, currentSong)
+    // 继续播放当前歌曲
+    let index = findIndex(state.sequenceList, currentSong)
     commit("setCurrentIndex", index)
-    // 设置当前播放模式：1.顺序播放 2.单曲循环 3.随机播放
-    commit("setClaymode", mode)
+    commit("setPlaymode", mode)
   },
   // --------删除单首歌曲--------
   delOneSong({ commit, state }, song) {
@@ -129,6 +120,7 @@ const actions = {
 }
 // 随机播放
 function shuffle(arr) {
+  arr = arr.slice()
   arr.sort((a, b) => {
     return Math.random() - 0.5
   })
