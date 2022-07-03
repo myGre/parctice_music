@@ -30,9 +30,15 @@
           <span class="dot"></span>
         </div>
         <div class="progress-wrapper">
-          <span class="time time-l">播放当前时长</span>
-          <div class="progress-bar-wrapper">进度条占位</div>
-          <span class="time time-r">播放总时长</span>
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <MyProgressBar 
+              :progress="progress" 
+              @progressMove="OnProgressMove" 
+              @progressEnd="OnProgressEnd">
+            </MyProgressBar>
+          </div>
+          <span class="time time-r">{{ formatTime(duration) }}</span>
         </div>
         <div class="operators">
           <div class="icon i-left">
@@ -42,7 +48,7 @@
             <i class="icon-prev"></i>
           </div>
           <div class="icon i-center" @click="playState">
-            <i :class="playStyly"></i>
+            <i :class="playIcon"></i>
           </div>
           <div class="icon i-right" @click="next">
             <i class="icon-next"></i>
@@ -54,7 +60,7 @@
       </div>
     </div>
   </div>
-  <audio ref="audioRef"></audio>
+  <audio ref="audioRef" @timeupdate="updateTime" @canplay="ready" @ended="end"></audio>
 </template>
 
 <script setup>
@@ -64,8 +70,13 @@ import { useStore } from 'vuex';
 import { getSong } from "@/service/player"
 import useMode from '@/assets/js/useMode'
 import useFavorite from '@/assets/js/useFavorite'
+import MyProgressBar from './play/ProgressBar.vue';
+import { formatTime } from '@/assets/js/utils'
 
-const audioRef = ref(null)
+const audioRef = ref(null) // audio标签控件
+const currentTime = ref(0) // 当前时长
+const duration = ref(0) // 总时长
+let isPlaying = false // 判断是否为触摸进度条播放
 // vuex
 const store = useStore()
 const sequenceList = computed(() => store.state.sequenceList)
@@ -74,14 +85,15 @@ const playing = computed(() => store.state.playing)
 const fullScreen = computed(() => store.state.fullScreen)
 const currentSong = computed(() => store.getters.currentSong)
 const currentIndex = computed(() => store.state.currentIndex)
+const playMode = computed(() => store.state.playMode)
 
-// hoos
+// hooks
 const { modeStyle, modeCode } = useMode()
 const { favoriteIcon, addOrremoveFavorite } = useFavorite()
-const playStyly = computed(() => {
+
+const playIcon = computed(() => {
   return playing.value ? "icon-pause" : "icon-play"
 })
-
 const handle = (item) => {
   return item.ar
     .map((songObj) => {
@@ -128,6 +140,24 @@ function loop() {
 function geBack() {
   store.commit("setFullScreen", false)
 }
+// 当前时长
+function updateTime() {
+  if (isPlaying) return
+  currentTime.value = audioRef.value.currentTime
+}
+// 总时长
+function ready() {
+  duration.value = audioRef.value.duration
+}
+// 播放结束
+function end() {
+  currentTime.value = 0
+  if (playMode.value == 1) {
+    loop() // 单曲循环
+  } else {
+    next()
+  }
+}
 // CD样式
 const cdStyle = computed(() => {
   return {
@@ -138,6 +168,13 @@ const cdStyle = computed(() => {
 function playState() {
   store.commit("setPlaying", !playing.value)
 }
+// 播放进度 0~1
+const progress = computed(() => {
+  if (!audioRef.value) return;
+  // 当前时长 / 总时长
+  return currentTime.value / duration.value
+})
+
 watch(playing, (newPlaying) => {
   let audio = audioRef.value
   if (newPlaying) {
@@ -163,8 +200,23 @@ watch(currentSong, async (newSong) => {
   audio.src = url
   audio.play()
 })
+
+// 进度条变化中
+function OnProgressMove(progress) {
+  isPlaying = true
+  currentTime.value = progress * duration.value
+}
+// 进度条变化后
+function OnProgressEnd(progress) {
+  isPlaying = false
+  audioRef.value.currentTime = progress * duration.value
+  if (!playing.value) {
+    store.commit("setPlaying", true)
+  }
+}
+
 onMounted(() => {
-  // console.log(favoriteIcon.value);
+  // console.log(currentTime.value);
 })
 </script>
 

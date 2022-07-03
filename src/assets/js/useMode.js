@@ -1,5 +1,6 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { setLocal } from "./storage-api";
 
 export default function useMode() {
   const store = useStore()
@@ -20,6 +21,7 @@ export default function useMode() {
   function modeCode() {
     let mode = (playmode.value + 1) % 3
     store.dispatch("updateMode", mode)
+    setLocal("__mode__", mode)
   }
   return {
     modeStyle,

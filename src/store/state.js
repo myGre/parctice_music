@@ -8,7 +8,7 @@ const state = {
   // 播放状态
   playing: false,
   // 播放模式：0.顺序播放 1.单曲循环 2.随机播放
-  playmode: 0,
+  playmode: Number(getLocal("__mode__")) || 0,
   // 全屏播放器/mini播放器
   fullScreen: false,
   // 当前播放歌曲的索引

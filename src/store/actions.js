@@ -1,3 +1,5 @@
+import { removeLocal } from "@/assets/js/storage-api"
+
 const actions = {
   // --------添加一首歌到当前播放歌曲后面--------
   addOnePlay({ commit, state }, play) {
@@ -48,7 +50,8 @@ const actions = {
     // 当前歌曲下标
     commit("setCurrentIndex", 0)
     // 设置当前播放模式：1.顺序播放 2.单曲循环 3.随机播放
-    commit("setPlaymode", 1)
+    commit("setPlaymode", 0)
+    removeLocal("__mode__")
     // 设置全屏播放
     commit("setFullScreen", true)
     // 播放状态
