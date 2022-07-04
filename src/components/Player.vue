@@ -11,8 +11,8 @@
         <h1 class="title">{{ currentSong.name }}</h1>
         <h2 class="subtitle">{{ handle(currentSong) }}</h2>
       </div>
-      <div class="middle">
-        <div class="middle-l">
+      <div class="middle" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
+        <div class="middle-l" :style="middleLStyle" >
           <div class="cd-wrapper playing" :style="cdStyle">
             <div class="cd">
               <img class="image" :src="currentSong.al.picUrl" />
@@ -23,19 +23,22 @@
           </div>
         </div>
         <!-- middle-r -->
+        <div class="middle-r" :style="middleRStyle">
+          <div class="lyric-wrapper">
+            <p class="text" v-for="(item, index) in currentLyaic" :key="index">{{ item.currentSong }}</p>
+            <p class="pure-music"></p>
+          </div>
+        </div>
       </div>
       <div class="bottom">
         <div class="dot-wrapper">
-          <span class="dot"></span>
-          <span class="dot"></span>
+          <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+          <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
         </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
-            <MyProgressBar 
-              :progress="progress" 
-              @progressMove="OnProgressMove" 
-              @progressEnd="OnProgressEnd">
+            <MyProgressBar :progress="progress" @progressMove="OnProgressMove" @progressEnd="OnProgressEnd">
             </MyProgressBar>
           </div>
           <span class="time time-r">{{ formatTime(duration) }}</span>
@@ -67,16 +70,18 @@
 
 import { computed, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
-import { getSong } from "@/service/player"
+import { getSong, getLyric } from "@/service/player"
 import useMode from '@/assets/js/useMode'
 import useFavorite from '@/assets/js/useFavorite'
 import MyProgressBar from './play/ProgressBar.vue';
-import { formatTime } from '@/assets/js/utils'
+import { formatTime, formatLyaic } from '@/assets/js/utils'
+import useMiddle from '@/assets/js/useMiddle';
 
 const audioRef = ref(null) // audio标签控件
 const currentTime = ref(0) // 当前时长
 const duration = ref(0) // 总时长
 let isPlaying = false // 判断是否为触摸进度条播放
+const currentLyaic = ref([])
 // vuex
 const store = useStore()
 const sequenceList = computed(() => store.state.sequenceList)
@@ -90,6 +95,15 @@ const playMode = computed(() => store.state.playMode)
 // hooks
 const { modeStyle, modeCode } = useMode()
 const { favoriteIcon, addOrremoveFavorite } = useFavorite()
+const
+  {
+    middleLStyle,
+    middleRStyle,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+    currentShow
+  } = useMiddle()
 
 const playIcon = computed(() => {
   return playing.value ? "icon-pause" : "icon-play"
@@ -168,6 +182,7 @@ const cdStyle = computed(() => {
 function playState() {
   store.commit("setPlaying", !playing.value)
 }
+
 // 播放进度 0~1
 const progress = computed(() => {
   if (!audioRef.value) return;
@@ -187,6 +202,8 @@ watch(currentSong, async (newSong) => {
   if (!newSong.id) return
   let { data } = await getSong(newSong.id)
   let url = data[0].url
+  let {lrc} = await getLyric(newSong.id)
+  currentLyaic.value = formatLyaic(lrc.lyric)
   // 没有版权
   if (!url) {
     // 播放下一首歌曲
@@ -215,8 +232,8 @@ function OnProgressEnd(progress) {
   }
 }
 
-onMounted(() => {
-  // console.log(currentTime.value);
+onMounted(async() => {
+
 })
 </script>
 

@@ -10,3 +10,28 @@ export function formatTime(interval) {
   
   return `${m}:${s}`
 }
+
+// 处理歌词
+export function formatLyaic(currentSong) {
+  // console.log(currentSong);
+  /* 
+    reduce((total, currentValue, currentIndex, arr) =>{}, initialValue)
+    @params:
+      total        必填项，初始值，或计算后返回的值
+      currentValue 必填项，当前元素
+      currentIndex 可选项，当前元素索引
+      arr          可选项，当前元素所在的数组对象
+      initialValue 可选项，传递函数的初始值
+  */
+  return currentSong.split('[').filter(item => item != "").reduce((total, currentValue)=>{
+    let obj = {}
+    let time = currentValue.split("]")[0] // 01:20.32
+    // 处理时间格式
+    let timeArr = time.split(":") 
+    obj.time = timeArr[0] * 60 + timeArr[1] * 1
+    obj.currentSong = currentValue.split("]")[1]
+    total.push(obj)
+    return total
+  }, [])
+  
+}
