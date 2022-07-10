@@ -12,7 +12,7 @@
         <h2 class="subtitle">{{ handle(currentSong) }}</h2>
       </div>
       <div class="middle" @touchstart="onTouchStart" @touchmove="onTouchMove" @touchend="onTouchEnd">
-        <div class="middle-l" :style="middleLStyle" >
+        <div class="middle-l" :style="middleLStyle">
           <div class="cd-wrapper playing" :style="cdStyle">
             <div class="cd">
               <img class="image" :src="currentSong.al.picUrl" />
@@ -23,9 +23,10 @@
           </div>
         </div>
         <!-- middle-r -->
-        <my-scroll class="middle-r" :style="middleRStyle">
-          <div class="lyric-wrapper">
-            <p class="text" v-for="(item, index) in currentLyaic" :key="index">{{ item.currentSong }}</p>
+        <my-scroll class="middle-r" :style="middleRStyle" ref="lyricScrollRef">
+          <div class="lyric-wrapper" ref="lyricRef">
+            <p class="text" v-for="(item, index) in currentLyaic" :key="index"
+              :class="{ current: index === currentLyaicNum }">{{ item.currentSong }}</p>
             <p class="pure-music"></p>
           </div>
         </my-scroll>
@@ -77,12 +78,11 @@ import useFavorite from '@/assets/js/useFavorite'
 import MyProgressBar from './play/ProgressBar.vue';
 import { formatTime, formatLyaic } from '@/assets/js/utils'
 import useMiddle from '@/assets/js/useMiddle';
-
+import useLyric from '@/assets/js/useLyric'
 const audioRef = ref(null) // audio标签控件
 const currentTime = ref(0) // 当前时长
 const duration = ref(0) // 总时长
 let isPlaying = false // 判断是否为触摸进度条播放
-const currentLyaic = ref([])
 // vuex
 const store = useStore()
 const sequenceList = computed(() => store.state.sequenceList)
@@ -105,7 +105,17 @@ const
     onTouchEnd,
     currentShow
   } = useMiddle()
-
+const
+  {
+    currentLyaic,
+    currentLyaicNum,
+    lyricScrollRef,
+    lyricRef,
+    clickSong,
+    currentMTime,
+    playLyric,
+    stopPlay
+  } = useLyric(currentTime)
 const playIcon = computed(() => {
   return playing.value ? "icon-pause" : "icon-play"
 })
@@ -149,6 +159,8 @@ function loop() {
   audio.currentTime = 0
   // 重新播放
   audio.play()
+  stopPlay()
+  playLyric()
   store.commit("setPlaying", true)
 }
 // 返回
@@ -195,15 +207,18 @@ watch(playing, (newPlaying) => {
   let audio = audioRef.value
   if (newPlaying) {
     audio.play()
+    stopPlay()
+    playLyric()
   } else {
     audio.pause()
+    stopPlay()
   }
 })
 watch(currentSong, async (newSong) => {
   if (!newSong.id) return
   let { data } = await getSong(newSong.id)
   let url = data[0].url
-  let {lrc} = await getLyric(newSong.id)
+  let { lrc } = await getLyric(newSong.id)
   currentLyaic.value = formatLyaic(lrc.lyric)
   // 没有版权
   if (!url) {
@@ -216,14 +231,17 @@ watch(currentSong, async (newSong) => {
   }
   let audio = audioRef.value
   audio.src = url
-  if(!playing.value) return
+  if (!playing.value) return
   audio.play()
+  stopPlay()
+  playLyric()
 })
 
 // 进度条变化中
 function OnProgressMove(progress) {
   isPlaying = true
   currentTime.value = progress * duration.value
+  stopPlay()
 }
 // 进度条变化后
 function OnProgressEnd(progress) {
@@ -232,9 +250,11 @@ function OnProgressEnd(progress) {
   if (!playing.value) {
     store.commit("setPlaying", true)
   }
+  stopPlay()
+  playLyric()
 }
 
-onMounted(async() => {
+onMounted(async () => {
 
 })
 </script>
