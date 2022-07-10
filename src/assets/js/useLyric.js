@@ -7,6 +7,7 @@ export default function useLyaic(currentTime) {
 
   const store = useStore()
   const currentSong = computed(() => store.getters.currentSong)
+  const playing = computed(()=> store.state.playing)
   const currentLyaic = ref([])
   const currentLyaicNum = ref(0) // 当前播放行数
   const currentPlay = ref("") // 当前播放歌词
@@ -21,6 +22,7 @@ export default function useLyaic(currentTime) {
     currentLyaic.value = formatLyaic(lrc.lyric)
     // 重置
     currentLyaicNum.value = 0
+    if(!playing.value) return
     stopPlay()
     playLyric() // 播放当前歌词
   })

@@ -218,8 +218,6 @@ watch(currentSong, async (newSong) => {
   if (!newSong.id) return
   let { data } = await getSong(newSong.id)
   let url = data[0].url
-  let { lrc } = await getLyric(newSong.id)
-  currentLyaic.value = formatLyaic(lrc.lyric)
   // 没有版权
   if (!url) {
     // 播放下一首歌曲
@@ -231,7 +229,7 @@ watch(currentSong, async (newSong) => {
   }
   let audio = audioRef.value
   audio.src = url
-  if (!playing.value) return
+  if(!playing.value) return
   audio.play()
   stopPlay()
   playLyric()
