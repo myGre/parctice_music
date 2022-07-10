@@ -23,12 +23,12 @@
           </div>
         </div>
         <!-- middle-r -->
-        <div class="middle-r" :style="middleRStyle">
+        <my-scroll class="middle-r" :style="middleRStyle">
           <div class="lyric-wrapper">
             <p class="text" v-for="(item, index) in currentLyaic" :key="index">{{ item.currentSong }}</p>
             <p class="pure-music"></p>
           </div>
-        </div>
+        </my-scroll>
       </div>
       <div class="bottom">
         <div class="dot-wrapper">
@@ -71,6 +71,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { getSong, getLyric } from "@/service/player"
+import MyScroll from "@/components/base/Scroll.vue"
 import useMode from '@/assets/js/useMode'
 import useFavorite from '@/assets/js/useFavorite'
 import MyProgressBar from './play/ProgressBar.vue';
@@ -215,6 +216,7 @@ watch(currentSong, async (newSong) => {
   }
   let audio = audioRef.value
   audio.src = url
+  if(!playing.value) return
   audio.play()
 })
 
