@@ -1,7 +1,7 @@
 <template>
   <div class="player" v-if="playList.length">
     <div class="normal-player" v-show="fullScreen">
-      <div class="background" >
+      <div class="background">
         <img />
       </div>
       <div class="top">
@@ -19,7 +19,7 @@
             </div>
           </div>
           <div class="playing-lyric-wrapper">
-            <div class="playing-lyric">{{currentPlay}}</div>
+            <div class="playing-lyric">{{ currentPlay }}</div>
           </div>
         </div>
         <!-- middle-r -->
@@ -63,6 +63,8 @@
         </div>
       </div>
     </div>
+    <my-miniPlayerVue v-show="!fullScreen" :cdStyle="cdStyle" :playState="playState" :handle="handle"
+      :progress="progress"></my-miniPlayerVue>
   </div>
   <audio ref="audioRef" @timeupdate="updateTime" @canplay="ready" @ended="end"></audio>
 </template>
@@ -79,6 +81,10 @@ import MyProgressBar from './play/ProgressBar.vue';
 import { formatTime, formatLyaic } from '@/assets/js/utils'
 import useMiddle from '@/assets/js/useMiddle';
 import useLyric from '@/assets/js/useLyric'
+import MyMiniPlayerVue from './play/MiniPlayer.vue';
+
+
+
 const audioRef = ref(null) // audio标签控件
 const currentTime = ref(0) // 当前时长
 const duration = ref(0) // 总时长
@@ -204,10 +210,10 @@ const progress = computed(() => {
   // 当前时长 / 总时长
   return currentTime.value / duration.value
 })
-watch(directionValue, (newValue)=>{
+watch(directionValue, (newValue) => {
   if (newValue === "垂直") {
     lyricScrollRef.value.scroll.enable() // 恢复功能
-  } else{
+  } else {
     lyricScrollRef.value.scroll.disable() // 关闭功能
   }
 })

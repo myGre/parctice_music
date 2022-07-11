@@ -75,10 +75,11 @@ export default function useLyaic(currentTime) {
   }
   // 歌词滚动
   function startRun() {
-    stopPlay()
-    let index = currentLyaicNum.value
+    
     let currentLyaicValue = currentLyaic.value
     if (!currentLyaicValue.length) return
+    let index = currentLyaicNum.value
+
     if (index === currentLyaicValue.length - 1) return
     // 差值：上一句歌词和下一句歌词时间的差值（非最后一句歌词）
     let differenceValue = currentLyaicValue[index + 1].time - currentTime.value
