@@ -23,7 +23,7 @@ export function formatLyaic(currentSong) {
       arr          可选项，当前元素所在的数组对象
       initialValue 可选项，传递函数的初始值
   */
-  return currentSong.split('[').filter(item => item != "").reduce((total, currentValue)=>{
+  let arr = currentSong.split('[').filter(item => item != "").reduce((total, currentValue)=>{
     let obj = {}
     let time = currentValue.split("]")[0] // 01:20.32
     // 处理时间格式
@@ -33,5 +33,5 @@ export function formatLyaic(currentSong) {
     total.push(obj)
     return total
   }, [])
-  
+  return arr.filter(item => item.currentSong.trim() !== "")
 }

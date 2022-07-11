@@ -14,6 +14,7 @@ export default function useLyaic(currentTime) {
   const lyricScrollRef = ref(null) // 滚动组件
   const lyricRef = ref(null) // 歌词p标签
   const currentMTime = ref(0) // 点击播放哪一句歌词
+
   let timer = null // 监听器
   // 监听当前播放歌曲
   watch(currentSong, async (newSong) => {
@@ -21,15 +22,18 @@ export default function useLyaic(currentTime) {
     let { lrc } = await getLyric(newSong.id)
     currentLyaic.value = formatLyaic(lrc.lyric)
     // 重置
-    currentLyaicNum.value = 0
+    currentLyaicNum.value = currentTime.value = 0
     if(!playing.value) return
     stopPlay()
     playLyric() // 播放当前歌词
   })
-
+  // 监听当前索引
   watch(currentLyaicNum, (newNum) => {
+    // 当前索引
+    currentLyaicNum.value = newNum
     run(newNum)
   })
+
   function run(newNum) {
     const lyricScrollRefValue = lyricScrollRef.value
     const lyricRefValue = lyricRef.value
@@ -56,6 +60,7 @@ export default function useLyaic(currentTime) {
 
   }
   function playLyric() {
+    
     let currentLyaicValue = currentLyaic.value
     if (currentLyaicValue) {
       // 开启歌词滚动
@@ -70,15 +75,16 @@ export default function useLyaic(currentTime) {
   }
   // 歌词滚动
   function startRun() {
+    stopPlay()
     let index = currentLyaicNum.value
     let currentLyaicValue = currentLyaic.value
     if (!currentLyaicValue.length) return
-
     if (index === currentLyaicValue.length - 1) return
     // 差值：上一句歌词和下一句歌词时间的差值（非最后一句歌词）
     let differenceValue = currentLyaicValue[index + 1].time - currentTime.value
     timer = setTimeout(() => {
       currentLyaicNum.value = Math.min(++index, currentLyaicValue.length - 1)
+      currentPlay.value = currentLyaicValue[index].currentSong
       startRun()
     }, differenceValue * 1000)
   }
@@ -97,7 +103,7 @@ export default function useLyaic(currentTime) {
       }
     }
     currentLyaicNum.value = index
-    currentPlay.value = currentLyaicValue[index]
+    currentPlay.value = currentLyaicValue[index].currentSong
   }
   return {
     currentLyaic,
@@ -107,6 +113,7 @@ export default function useLyaic(currentTime) {
     clickSong,
     currentMTime,
     playLyric,
-    stopPlay
+    stopPlay,
+    currentPlay
   }
 }

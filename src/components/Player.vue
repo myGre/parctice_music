@@ -1,7 +1,7 @@
 <template>
   <div class="player" v-if="playList.length">
     <div class="normal-player" v-show="fullScreen">
-      <div class="background">
+      <div class="background" >
         <img />
       </div>
       <div class="top">
@@ -19,7 +19,7 @@
             </div>
           </div>
           <div class="playing-lyric-wrapper">
-            <div class="playing-lyric">歌词占位</div>
+            <div class="playing-lyric">{{currentPlay}}</div>
           </div>
         </div>
         <!-- middle-r -->
@@ -103,7 +103,8 @@ const
     onTouchStart,
     onTouchMove,
     onTouchEnd,
-    currentShow
+    currentShow,
+    directionValue
   } = useMiddle()
 const
   {
@@ -114,7 +115,8 @@ const
     clickSong,
     currentMTime,
     playLyric,
-    stopPlay
+    stopPlay,
+    currentPlay
   } = useLyric(currentTime)
 const playIcon = computed(() => {
   return playing.value ? "icon-pause" : "icon-play"
@@ -202,7 +204,13 @@ const progress = computed(() => {
   // 当前时长 / 总时长
   return currentTime.value / duration.value
 })
-
+watch(directionValue, (newValue)=>{
+  if (newValue === "垂直") {
+    lyricScrollRef.value.scroll.enable() // 恢复功能
+  } else{
+    lyricScrollRef.value.scroll.disable() // 关闭功能
+  }
+})
 watch(playing, (newPlaying) => {
   let audio = audioRef.value
   if (newPlaying) {
@@ -229,7 +237,7 @@ watch(currentSong, async (newSong) => {
   }
   let audio = audioRef.value
   audio.src = url
-  if(!playing.value) return
+  if (!playing.value) return
   audio.play()
   stopPlay()
   playLyric()
@@ -244,7 +252,8 @@ function OnProgressMove(progress) {
 // 进度条变化后
 function OnProgressEnd(progress) {
   isPlaying = false
-  audioRef.value.currentTime = progress * duration.value
+  audioRef.value.currentTime = currentTime.value = progress * duration.value
+
   if (!playing.value) {
     store.commit("setPlaying", true)
   }
@@ -252,9 +261,6 @@ function OnProgressEnd(progress) {
   playLyric()
 }
 
-onMounted(async () => {
-
-})
 </script>
 
 <style lang="scss" scoped>

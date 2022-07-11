@@ -20,7 +20,7 @@ export function useScroll(props, emit) {
   })
   // 销毁时
   onUnmounted(() => {
-    scroll.value.destroy()
+    scroll.value.destroy
   })
   // 激活时
   onActivated(() => {
@@ -29,7 +29,7 @@ export function useScroll(props, emit) {
   })
   // 失活时
   onDeactivated(()=>{
-    scroll.value.enable
+    scroll.value.enable()
   })
   return {
     rootRef,

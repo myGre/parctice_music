@@ -5,14 +5,30 @@ export default function useMiddle() {
   const currentShow = ref("cd") // 当前所显示的页面
   const middleLStyle = ref(null) // cd样式
   const middleRStyle = ref(null) //lyric
+  const directionValue = ref(0) // 判断是否为垂直还是水平滑动
   const touch = {} // 记录触摸移动
 
 
   function onTouchStart(e) {
     touch.x1 = e.touches[0].pageX // 初始位置
-
+    touch.y1 = e.touches[0].pageY
+    touch.direction = ""
+    
   }
   function onTouchMove(e) {
+    let touchX1 = Math.abs(e.touches[0].pageX-touch.x1) // 取绝对值
+    let touchY1 = Math.abs(e.touches[0].pageY-touch.y1) // 取绝对值
+
+    // 锁住方向
+    if (!touch.direction) {
+      touch.direction = touchX1 >= touchY1 ? "水平" : "垂直"
+    }
+    if (touch.direction === "垂直") {
+      directionValue.value = "垂直"
+      return
+    }else {
+      directionValue.value = "水平"
+    }
     const duratX1 = e.touches[0].pageX - touch.x1 // 偏移量
     let proportional = 0 // 比例
     if (currentShow.value === "cd") {
@@ -72,5 +88,6 @@ export default function useMiddle() {
     onTouchStart,
     onTouchMove,
     onTouchEnd,
+    directionValue
   }
 }
