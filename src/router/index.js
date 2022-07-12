@@ -7,7 +7,13 @@ const routes = [
   },
   {
     path: "/recommend",
-    component: () => import("@/views/Recommend.vue")
+    component: () => import("@/views/Recommend.vue"),
+    children: [
+      {
+        path: ":id",
+        component: () => import("@/views/PlayListDetail.vue")
+      }
+    ]
   },
   {
     path: "/search",

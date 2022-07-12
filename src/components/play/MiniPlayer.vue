@@ -2,7 +2,7 @@
   <div class="mini-player">
     <div class="cd-wrapper">
       <div class="cd" :style="cdStyle">
-        <img :src="currentSong.al.picUrl" />
+        <img :src="currentSong.al.picUrl" @click.stop="switchPlay()" />
       </div>
     </div>
     <div class="slider-wrapper">
@@ -15,20 +15,22 @@
         <i class="icon-mini" :class="miniIconStyle" @click.stop="playState"></i>
       </my-progressCircle>
     </div>
-    <div class="control">
+    <div class="control" @click="showPlayList">
       <i class="icon-playlist"></i>
     </div>
-    <div></div>
+    <my-playList ref="playListRef"></my-playList>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed, nextTick, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import MyProgressCircle from '@/components/play/ProgressCircle'
+import MyPlayList from "./PlayList.vue"
 
+const playListRef = ref(null)
 const store = useStore()
-const props = defineProps(["cdStyle", "playState", "handle", "progress"])
+const props = defineProps(["cdStyle", "playState", "handle", "progress", "switchPlay"])
 
 const currentSong = computed(() => store.getters.currentSong)
 const playing = computed(() => store.state.playing)
@@ -37,6 +39,10 @@ const miniIconStyle = computed(() => {
   return playing.value ? "icon-pause-mini" : "icon-play-mini"
 })
 
+// 显示歌曲列表
+function showPlayList(params) {
+  playListRef.value.show()
+}
 </script>
 
 <style lang="scss" scoped>

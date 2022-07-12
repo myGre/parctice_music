@@ -7,7 +7,7 @@ export default function useLyaic(currentTime) {
 
   const store = useStore()
   const currentSong = computed(() => store.getters.currentSong)
-  const playing = computed(()=> store.state.playing)
+  const playing = computed(() => store.state.playing)
   const currentLyaic = ref([])
   const currentLyaicNum = ref(0) // 当前播放行数
   const currentPlay = ref("") // 当前播放歌词
@@ -23,7 +23,7 @@ export default function useLyaic(currentTime) {
     currentLyaic.value = formatLyaic(lrc.lyric)
     // 重置
     currentLyaicNum.value = currentTime.value = 0
-    if(!playing.value) return
+    if (!playing.value) return
     stopPlay()
     playLyric() // 播放当前歌词
   })
@@ -48,25 +48,14 @@ export default function useLyaic(currentTime) {
       lyricScrollRefValue.scroll.scrollToElement(0, 0, 1000)
     }
   }
-  // 切歌词
-  function clickSong(index) {
-    const currentLyaicValue = currentLyaic.value
-    const currentPlayValue = currentPlay.value
-
-    currentLyaicNum.value = index
-    // 当前播放时间
-    let time = currentLyaicValue[index].time
-    console.log(time);
-
-  }
   function playLyric() {
-    
+
     let currentLyaicValue = currentLyaic.value
     if (currentLyaicValue) {
-      // 开启歌词滚动
-      startRun()
       // 当前索引
       currentIndex()
+      // 开启歌词滚动
+      startRun()
     }
   }
   // 关闭定时器
@@ -75,7 +64,7 @@ export default function useLyaic(currentTime) {
   }
   // 歌词滚动
   function startRun() {
-    
+
     let currentLyaicValue = currentLyaic.value
     if (!currentLyaicValue.length) return
     let index = currentLyaicNum.value
@@ -111,7 +100,6 @@ export default function useLyaic(currentTime) {
     currentLyaicNum,
     lyricScrollRef,
     lyricRef,
-    clickSong,
     currentMTime,
     playLyric,
     stopPlay,

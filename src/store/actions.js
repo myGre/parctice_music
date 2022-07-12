@@ -64,7 +64,7 @@ const actions = {
     // 随机播放
     if (mode == 2) {
       commit("setSequenceList", shuffle(state.playList))
-    } else{
+    } else {
       commit("setSequenceList", state.playList)
     }
     // 继续播放当前歌曲
@@ -100,9 +100,7 @@ const actions = {
     commit("setPlayList", playList)
     // 当前歌曲下标
     commit("setCurrentIndex", currentIndex)
-    // 设置全屏播放
-    commit("setFullScreen", true)
-    if (sequenceList.length) {
+    if (!sequenceList.length) {
       // 播放状态
       commit("setPlaying", false)
     }
@@ -115,8 +113,7 @@ const actions = {
     commit("setPlayList", [])
     // 当前歌曲下标
     commit("setCurrentIndex", 0)
-    // 设置全屏播放
-    commit("setFullScreen", true)
+
     // 播放状态
     commit("setPlaying", false)
   }

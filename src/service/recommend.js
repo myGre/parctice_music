@@ -13,3 +13,11 @@ export function getPlaylist() {
     limit: 50
   })
 }
+// 歌单详情
+export function getPlayDetail(id) {
+  return get(`/playlist/detail?id=${id}`)
+}
+// 歌曲信息
+export function getSongDetail(id) {
+  return get(`/song/detail?id=${id}`)
+}

@@ -26,7 +26,7 @@
         <my-scroll class="middle-r" :style="middleRStyle" ref="lyricScrollRef">
           <div class="lyric-wrapper" ref="lyricRef">
             <p class="text" v-for="(item, index) in currentLyaic" :key="index"
-              :class="{ current: index === currentLyaicNum }">{{ item.currentSong }}</p>
+              :class="{ current: index === currentLyaicNum }" @click="clickSong(index)">{{ item.currentSong }}</p>
             <p class="pure-music"></p>
           </div>
         </my-scroll>
@@ -63,8 +63,8 @@
         </div>
       </div>
     </div>
-    <my-miniPlayerVue v-show="!fullScreen" :cdStyle="cdStyle" :playState="playState" :handle="handle"
-      :progress="progress"></my-miniPlayerVue>
+    <my-miniPlayerVue v-show="!fullScreen" :cdStyle="cdStyle" :switchPlay="switchPlay" :playState="playState"
+      :handle="handle" :progress="progress"></my-miniPlayerVue>
   </div>
   <audio ref="audioRef" @timeupdate="updateTime" @canplay="ready" @ended="end"></audio>
 </template>
@@ -118,7 +118,6 @@ const
     currentLyaicNum,
     lyricScrollRef,
     lyricRef,
-    clickSong,
     currentMTime,
     playLyric,
     stopPlay,
@@ -134,6 +133,20 @@ const handle = (item) => {
     })
     .join("/");
 };
+// 切歌词
+function clickSong(index) {
+  isPlaying = true
+  const currentLyaicValue = currentLyaic.value
+
+  // 当前播放时间
+  let time = currentLyaicValue[index].time
+  if (isPlaying) {
+    audioRef.value.currentTime = currentTime.value = time
+    isPlaying = false
+  }
+  stopPlay()
+  playLyric()
+}
 // 上一首
 function prev() {
   // 如果没有歌曲
@@ -174,6 +187,10 @@ function loop() {
 // 返回
 function geBack() {
   store.commit("setFullScreen", false)
+}
+// mini播放器和播放器切换
+function switchPlay() {
+  store.commit("setFullScreen", true)
 }
 // 当前时长
 function updateTime() {
