@@ -5,7 +5,7 @@
         <h1 class="title">
           <i class="icon"></i>
           <span class="text">顺序播放</span>
-          <span class="clear" @click.stop="clearAll">
+          <span class="clear" @click.stop="showMyconfirm">
             <i class="icon-clear"></i>
           </span>
         </h1>
@@ -28,6 +28,8 @@
         <span>关闭</span>
       </div>
     </div>
+    <!-- 弹窗组件 -->
+    <my-confirmFade ref="confirmRef" title="是否全部删除" confirmRbtn="清空" @confirm="clearAll"></my-confirmFade>
   </div>
 </template>
 
@@ -35,6 +37,7 @@
 import { useStore } from 'vuex';
 import MyScroll from "@/components/base/Scroll.vue"
 import { computed, ref, nextTick, watch } from 'vue';
+import MyConfirmFade from "@/components/base/ConfirmFade.vue"
 import useFavorite from '@/assets/js/useFavorite';
 
 const store = useStore()
@@ -48,14 +51,21 @@ const { favoriteIcon, addOrremoveFavorite } = useFavorite()
 const scrollRef = ref(null)
 const playListRef = ref(null)
 const showSongList = ref(false)
+const confirmRef = ref(null)
 function playSong(song) {
   if (currentSong.value.id === song.id) return 'icon-play'
 }
 watch(currentSong, (newSong) => {
-  if (newSong) {
+  if (newSong.length > 0) {
     scrollToCurrent()
   }
 })
+
+// 显示弹窗组件
+function showMyconfirm() {
+  confirmRef.value.show()
+}
+
 // 切换歌曲
 function tebItem(song) {
   const index = sequenceList.value.findIndex(item => item.id === song.id)
